@@ -30,6 +30,13 @@ We only call something **stable** when we mean it.
 </details>
 
 
+## v0.3.1-stable · 17/11/2026
+
+Contributor guide and link pass — no behavior changes. This version was made for CLI with a stable release channel on 17/11/2026 (v0.3.1-stable).
+
+- New CONTRIBUTING.md: pre-commit checks, commit conventions, module map, and recipes for adding flags and dataset fields.
+- README's More section links CONTRIBUTING and reflects the current version.
+
 ## v0.3.0-stable · 17/11/2026
 
 Docs pass: README rewritten in the ace style (usage table, info-block spec, data section, roadmap) and `--help` examples now cover the scripting flags. This version was made for CLI with a stable release channel on 17/11/2026 (v0.3.0-stable).

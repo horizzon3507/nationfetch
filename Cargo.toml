@@ -1,6 +1,6 @@
 [package]
 name = "nationfetch"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2024"
 description = "Fetch country information in your terminal — a Rust take on countryfetch"
 license = "Apache-2.0"

@@ -111,5 +111,6 @@ Missing data shows `unknown` instead of failing.
 
 ## More
 
-- [CHANGELOG.md](CHANGELOG.md): versions in Hory style, `v0.2.0-stable` current.
+- [CHANGELOG.md](CHANGELOG.md): versions in Hory style, `v0.3.1-stable` current.
+- [CONTRIBUTING.md](CONTRIBUTING.md): commit style, layout map, how to add flags and fields.
 - [LICENSE](LICENSE): Apache-2.0.
