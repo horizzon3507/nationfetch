@@ -29,6 +29,15 @@ We only call something **stable** when we mean it.
 
 </details>
 
+
+## v0.3.0-stable · 17/11/2026
+
+Docs pass: README rewritten in the ace style (usage table, info-block spec, data section, roadmap) and `--help` examples now cover the scripting flags. This version was made for CLI with a stable release channel on 17/11/2026 (v0.3.0-stable).
+
+- README rewritten: real usage table, full `--field` name list, info-block spec, data/cache details and a short roadmap.
+- `--help` examples updated to show `--field` and `--list`.
+- License switched to Apache-2.0.
+
 ## v0.2.0-stable · 17/11/2026
 
 Renamed to nationfetch, neofetch-style side-by-side output, a much richer info block, and scripting-friendly raw outputs. This version was made for CLI with a stable release channel on 17/11/2026 (v0.2.0-stable).

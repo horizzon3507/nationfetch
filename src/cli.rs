@@ -5,14 +5,15 @@ EXAMPLES:
   nationfetch italy
         Fetch information about Italy.
   nationfetch italy --flag
-        Fetch information about Italy, including its flag.
+        Flag art and info side by side.
   nationfetch --sync --flag
-        Store information of all countries in the cache, including
-        generated flag ASCII art.
+        Store all countries in the cache, including flag art.
   nationfetch --capital \"kuala lumpur\"
-        Fetch information about the country of the given capital.
-  nationfetch --flagonly \"united states\"
-        Fetch just the flag of the USA.";
+        Fetch the country of the given capital.
+  nationfetch --field capital france
+        Print just \"Paris\" — handy in scripts.
+  nationfetch --list
+        List all cached countries.";
 
 /// Fetch information about countries in your terminal.
 ///
