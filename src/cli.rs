@@ -2,22 +2,22 @@ use clap::Parser;
 
 const EXAMPLES: &str = "\
 EXAMPLES:
-  countryfetch italy
+  nationfetch italy
         Fetch information about Italy.
-  countryfetch italy --flag
+  nationfetch italy --flag
         Fetch information about Italy, including its flag.
-  countryfetch --sync --flag
+  nationfetch --sync --flag
         Store information of all countries in the cache, including
         generated flag ASCII art.
-  countryfetch --capital \"kuala lumpur\"
+  nationfetch --capital \"kuala lumpur\"
         Fetch information about the country of the given capital.
-  countryfetch --flagonly \"united states\"
+  nationfetch --flagonly \"united states\"
         Fetch just the flag of the USA.";
 
 /// Fetch information about countries in your terminal.
 ///
 /// Lookups run against a local cache; create or refresh it with
-/// `countryfetch --sync` (add `--flag` to also store flag art).
+/// `nationfetch --sync` (add `--flag` to also store flag art).
 #[derive(Parser)]
 #[command(version, about, long_about, after_help = EXAMPLES)]
 pub struct Cli {

@@ -1,4 +1,4 @@
-//! Local cache under the platform cache dir (`~/.cache/countryfetch`
+//! Local cache under the platform cache dir (`~/.cache/nationfetch`
 //! on Linux).
 
 use std::fs;
@@ -13,11 +13,19 @@ use crate::{api, country::Country};
 
 pub const COUNTRIES_FILE: &str = "countries.json";
 
-/// `<cache>/countryfetch` — e.g. `~/.cache/countryfetch`.
+/// `<cache>/nationfetch` — e.g. `~/.cache/nationfetch`.
+///
+/// Migrates the old `countryfetch` cache directory on first run so a
+/// previous `--sync` isn't wasted.
 pub fn dir() -> Result<PathBuf> {
-    Ok(dirs::cache_dir()
-        .context("could not determine the user cache directory")?
-        .join("countryfetch"))
+    let base = dirs::cache_dir()
+        .context("could not determine the user cache directory")?;
+    let new = base.join("nationfetch");
+    let old = base.join("countryfetch");
+    if !new.exists() && old.is_dir() {
+        let _ = fs::rename(&old, &new);
+    }
+    Ok(new)
 }
 
 /// Persist the full dataset as pretty-printed JSON.
@@ -36,7 +44,7 @@ pub fn read_countries(dir: &Path) -> Result<Vec<Country>> {
         Ok(raw) => raw,
         Err(e) if e.kind() == ErrorKind::NotFound => {
             anyhow::bail!(
-                "cache not found at {} — run `countryfetch --sync` first",
+                "cache not found at {} — run `nationfetch --sync` first",
                 path.display()
             )
         }
@@ -112,7 +120,7 @@ pub fn read_flag(country: &Country, dir: &Path) -> Result<String> {
     fs::read_to_string(&path).map_err(|e| {
         if e.kind() == ErrorKind::NotFound {
             anyhow::anyhow!(
-                "flag not found at {} — run `countryfetch --sync --flag` first",
+                "flag not found at {} — run `nationfetch --sync --flag` first",
                 path.display()
             )
         } else {

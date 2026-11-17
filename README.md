@@ -1,11 +1,11 @@
-# countryfetch
+# nationfetch
 
 A CLI tool for fetching information about countries, written in Rust (edition
 2024). Inspired by [pridont/countryfetch](https://github.com/pridont/countryfetch)
 (Go).
 
 The original tool talked to the public restcountries.com v3.1 API, which has
-since been deprecated. Instead, `countryfetch --sync` downloads the same frozen
+since been deprecated. Instead, `nationfetch --sync` downloads the same frozen
 v3.1 dataset from the [archived project
 repository](https://github.com/restcountries/restcountries) — no API key
 needed. Flag images come from [flagcdn.com](https://flagcdn.com).
@@ -13,10 +13,10 @@ needed. Flag images come from [flagcdn.com](https://flagcdn.com).
 ## Installation
 
 ```bash
-cargo install --path .
+cargo install --git https://github.com/horizzon3507/nationfetch
 ```
 
-Run `countryfetch --sync` once to populate the cache (`~/.cache/countryfetch`
+Run `nationfetch --sync` once to populate the cache (`~/.cache/nationfetch`
 on Linux, the platform cache dir elsewhere). Add `--flag` to also render and
 store ASCII art for every country's flag.
 
@@ -24,7 +24,7 @@ store ASCII art for every country's flag.
 
 ```
 USAGE:
-  countryfetch [OPTIONS] [NAME]
+  nationfetch [OPTIONS] [NAME]
 
 ARGS:
   <NAME>          Find a country by name (exact match first, then fuzzy)
@@ -46,16 +46,16 @@ OPTIONS:
 ## Examples
 
 ```bash
-countryfetch italy
+nationfetch italy
         Fetch information about Italy.
-countryfetch italy --flag
+nationfetch italy --flag
         Fetch information about Italy, including its flag.
-countryfetch --sync --flag
+nationfetch --sync --flag
         Store information of all countries in the cache, including
         generated flag ASCII art.
-countryfetch --capital "kuala lumpur"
+nationfetch --capital "kuala lumpur"
         Fetch information about the country of the given capital.
-countryfetch --flagonly "united states"
+nationfetch --flagonly "united states"
         Fetch just the flag of the USA.
 ```
 

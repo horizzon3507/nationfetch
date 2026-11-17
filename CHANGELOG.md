@@ -1,17 +1,17 @@
 # Changelog
 
-We follow [Semantic Versioning](https://semver.org/) and [Keep a Changelog](https://keepachangelog.com/). countryfetch is a single CLI surface.
+We follow [Semantic Versioning](https://semver.org/) and [Keep a Changelog](https://keepachangelog.com/). nationfetch is a single CLI surface.
 
 <details>
 <summary>To see more about versioning, expand this.</summary>
 
 Every version string starts with `v` (required), e.g. `v0.1.0-stable`.
 
-Here the installable surface is **CLI** (`countryfetch`). Other apps swap in their own names the same way — e.g. **GNOME**, **Desktop**, **Web** — whatever you actually ship.
+Here the installable surface is **CLI** (`nationfetch`). Other apps swap in their own names the same way — e.g. **GNOME**, **Desktop**, **Web** — whatever you actually ship.
 
 | Part | What you install | Example |
 | --- | --- | --- |
-| **CLI** | `countryfetch` in the terminal | `v0.1.0-stable` |
+| **CLI** | `nationfetch` in the terminal | `v0.1.0-stable` |
 
 With one surface there is no `m` in the tag and no per-surface sections — just the version notes.
 
@@ -31,7 +31,7 @@ We only call something **stable** when we mean it.
 
 ## v0.1.0-stable · 17/11/2026
 
-First public cut of the Rust countryfetch: cached lookups, truecolor flag art, and a parallel flag sync. This version was made for CLI with a stable release channel on 17/11/2026 (v0.1.0-stable).
+First public cut of nationfetch (then named countryfetch): cached lookups, truecolor flag art, and a parallel flag sync. This version was made for CLI with a stable release channel on 17/11/2026 (v0.1.0-stable).
 
 - `--sync` pulls the frozen REST Countries v3.1 dataset (the live API now requires an API key) into the platform cache directory as `countries.json`.
 - Lookups run fully offline after sync: country by name (exact match first, then fuzzy substring), by capital, or `--random`.
