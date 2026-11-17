@@ -34,11 +34,15 @@ OPTIONS:
   --capital <CAPITAL>       Find a country by its capital
   -r, --random              Print a random country
   -f, --flag                Include the flag: stores art with --sync,
-                            prints cached art with a lookup
+                            prints a neofetch-style flag+info layout
   --flagonly                Print the flag only; needs a country name
   --flagremote              Render the flag from the remote image URL
   --width <WIDTH>           Flag width in characters [default: 40]
-  --height <HEIGHT>         Flag height in characters [default: 12]
+  --height <HEIGHT>         Flag height in characters [default: 20]
+  -l, --list                List all cached country names
+  --field <FIELD>           Print one raw value (capital, borders,
+                            calling, gini, cca3, ...) for scripts
+  --json                    Print the resolved country's raw JSON
   -h, --help                Print help
   -V, --version             Print version
 ```
@@ -49,7 +53,7 @@ OPTIONS:
 nationfetch italy
         Fetch information about Italy.
 nationfetch italy --flag
-        Fetch information about Italy, including its flag.
+        Fetch information about Italy, including its flag side by side.
 nationfetch --sync --flag
         Store information of all countries in the cache, including
         generated flag ASCII art.
@@ -57,6 +61,10 @@ nationfetch --capital "kuala lumpur"
         Fetch information about the country of the given capital.
 nationfetch --flagonly "united states"
         Fetch just the flag of the USA.
+nationfetch --field capital france
+        Print just "Paris" — handy in scripts.
+nationfetch --list
+        List all cached countries.
 ```
 
 ## Data sources

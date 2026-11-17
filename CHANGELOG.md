@@ -29,6 +29,16 @@ We only call something **stable** when we mean it.
 
 </details>
 
+## v0.2.0-stable · 17/11/2026
+
+Renamed to nationfetch, neofetch-style side-by-side output, a much richer info block, and scripting-friendly raw outputs. This version was made for CLI with a stable release channel on 17/11/2026 (v0.2.0-stable).
+
+- Renamed the binary and cache directory from `countryfetch` to `nationfetch`; the old cache migrates automatically on first run.
+- With `--flag`, output is now flag art on the left and the info block on the right (vertically centered), like neofetch/fastfetch; default flag height goes to 20 to match.
+- The info block doubles: official name, capital coordinates, region (subregion), population, area in km², languages, currencies, timezones, TLD, borders resolved to country names, independence and UN membership, FIFA code, driving side, calling code, gini and a maps link.
+- `--list` prints every cached country name; `--field <name>` prints one raw value (capital, borders, calling, cca3 and ~20 more) for scripts; `--json` emits the resolved country's full object — all three also work on `--capital` and `--random` picks.
+- The cache stores the upstream dataset verbatim, so newly surfaced fields never need a re-sync.
+
 ## v0.1.0-stable · 17/11/2026
 
 First public cut of nationfetch (then named countryfetch): cached lookups, truecolor flag art, and a parallel flag sync. This version was made for CLI with a stable release channel on 17/11/2026 (v0.1.0-stable).
