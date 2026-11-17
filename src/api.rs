@@ -29,3 +29,35 @@ pub fn fetch_countries(agent: &ureq::Agent) -> Result<Vec<Country>> {
         .read_json()
         .context("invalid country dataset")
 }
+
+/// Fetch raw bytes (flag PNGs).
+pub fn fetch_bytes(agent: &ureq::Agent, url: &str) -> Result<Vec<u8>> {
+    use std::io::Read;
+    let mut response = agent
+        .get(url)
+        .call()
+        .with_context(|| format!("failed to fetch {url}"))?;
+    let mut bytes = Vec::new();
+    response
+        .body_mut()
+        .as_reader()
+        .read_to_end(&mut bytes)
+        .with_context(|| format!("failed to read response from {url}"))?;
+    Ok(bytes)
+}
+
+/// Fetch a country's flag PNG, trying each candidate URL in order
+/// (`flags.png`, then the flagcdn `cca2` URL).
+pub fn fetch_flag_png(agent: &ureq::Agent, country: &Country) -> Result<Vec<u8>> {
+    let mut last_err = anyhow::anyhow!("no flag URL available");
+    for url in country.flag_urls() {
+        match fetch_bytes(agent, &url) {
+            Ok(png) => return Ok(png),
+            Err(e) => last_err = e,
+        }
+    }
+    Err(last_err.context(format!(
+        "could not fetch a flag for {}",
+        country.name.common
+    )))
+}

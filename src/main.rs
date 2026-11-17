@@ -1,4 +1,5 @@
 mod api;
+mod ascii;
 mod cache;
 mod cli;
 mod country;
@@ -17,18 +18,34 @@ fn main() {
 
 fn run() -> Result<()> {
     let args = cli::Cli::parse();
+    let size = ascii::FlagSize {
+        width: args.width,
+        height: args.height,
+    };
+    let agent = api::agent();
+    let dir = cache::dir()?;
 
     if args.sync {
-        let agent = api::agent();
         println!("Fetching countries data...");
         let countries = api::fetch_countries(&agent)?;
         println!("Saving cache...");
-        cache::save_countries(&countries, &cache::dir()?)?;
+        cache::save_countries(&countries, &dir)?;
         println!("{}", "Cache saved.".green());
+
+        if args.flag {
+            println!(
+                "Generating ASCII art for each country flag. This may take a minute..."
+            );
+            cache::cache_flags(&countries, &dir, &size)?;
+            println!("{}", "Done.".green());
+        }
     }
 
     let lookup = args.name.is_some() || args.capital.is_some() || args.random;
     if !lookup {
+        if args.flag_only {
+            anyhow::bail!("--flagonly requires a country name");
+        }
         if !args.sync {
             cli::Cli::command().print_help()?;
             println!();
@@ -36,7 +53,7 @@ fn run() -> Result<()> {
         return Ok(());
     }
 
-    let countries = cache::read_countries(&cache::dir()?)?;
+    let countries = cache::read_countries(&dir)?;
 
     if let Some(capital) = &args.capital {
         country::find_by_capital(&countries, capital)?.print();
@@ -50,8 +67,18 @@ fn run() -> Result<()> {
 
     if let Some(name) = &name {
         let country = country::find_by_name(&countries, name)?;
-        println!();
-        country.print();
+        if args.flag || args.flag_only || args.flag_remote {
+            if args.flag_remote {
+                let png = api::fetch_flag_png(&agent, country)?;
+                print!("{}", ascii::png_to_ascii(&png, &size)?);
+            } else {
+                print!("{}", cache::read_flag(country, &dir)?);
+            }
+        }
+        if !args.flag_only {
+            println!();
+            country.print();
+        }
     }
 
     Ok(())

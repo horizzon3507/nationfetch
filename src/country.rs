@@ -38,6 +38,8 @@ pub struct CapitalInfo {
 pub struct Country {
     pub name: CountryName,
     #[serde(default)]
+    pub cca2: String,
+    #[serde(default)]
     pub currencies: BTreeMap<String, CurrencyInfo>,
     #[serde(default)]
     pub capital: Vec<String>,
@@ -63,6 +65,28 @@ pub struct Country {
 }
 
 impl Country {
+    /// Cache file name for this country's flag art.
+    pub fn flag_file_name(&self) -> String {
+        self.name.common.replace(' ', "_")
+    }
+
+    /// Flag PNG URLs to try, in order. `flags.png` usually points at
+    /// flagcdn, but some entries link elsewhere (e.g. Wikimedia thumbs
+    /// that reject the requested size) — fall back to the cca2 CDN URL.
+    pub fn flag_urls(&self) -> Vec<String> {
+        let mut urls = vec![self.flags.png.clone()];
+        if !self.cca2.is_empty() {
+            let cdn = format!(
+                "https://flagcdn.com/w320/{}.png",
+                self.cca2.to_lowercase()
+            );
+            if !urls.contains(&cdn) {
+                urls.push(cdn);
+            }
+        }
+        urls
+    }
+
     fn currencies(&self) -> impl Iterator<Item = String> + '_ {
         self.currencies.iter().map(|(abbr, info)| match &info.symbol {
             Some(symbol) => format!("{} [{abbr}][{symbol}]", info.name),
