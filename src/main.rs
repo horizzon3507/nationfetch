@@ -36,18 +36,13 @@ fn run() -> Result<()> {
         println!("{}", "Cache saved.".green());
 
         if args.flag {
-            println!(
-                "Generating ASCII art for each country flag. This may take a minute..."
-            );
+            println!("Generating ASCII art for each country flag. This may take a minute...");
             cache::cache_flags(&cache::read_countries(&dir)?, &dir, &size)?;
             println!("{}", "Done.".green());
         }
     }
 
-    let lookup = args.name.is_some()
-        || args.capital.is_some()
-        || args.random
-        || args.list;
+    let lookup = args.name.is_some() || args.capital.is_some() || args.random || args.list;
     let name_arg = args.name;
     if !lookup {
         if args.flag_only {
@@ -112,12 +107,7 @@ fn run() -> Result<()> {
 
 /// Handle `--json`/`--field`: prints the raw representation and reports
 /// whether the normal display should be skipped.
-fn emit_raw(
-    json: bool,
-    field: Option<&str>,
-    country: &Country,
-    all: &[Country],
-) -> Result<bool> {
+fn emit_raw(json: bool, field: Option<&str>, country: &Country, all: &[Country]) -> Result<bool> {
     if json {
         println!("{}", serde_json::to_string_pretty(country)?);
         return Ok(true);

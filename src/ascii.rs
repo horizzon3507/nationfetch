@@ -33,8 +33,7 @@ fn image_to_ascii(img: &DynamicImage, size: &FlagSize) -> String {
 
     // Per cell: 24 (fg) + 24 (bg) escape bytes + 2 chars + a newline's
     // worth of slack.
-    let mut out =
-        String::with_capacity(img.width() as usize * img.height() as usize * 50);
+    let mut out = String::with_capacity(img.width() as usize * img.height() as usize * 50);
     let mut prev: Option<[u8; 3]> = None;
     for y in 0..img.height() {
         for x in 0..img.width() {
@@ -46,12 +45,10 @@ fn image_to_ascii(img: &DynamicImage, size: &FlagSize) -> String {
                 prev = Some(rgb);
             }
             // Rec. 601 luma, un-premultiplied over black.
-            let luma = (299.0 * r as f32 + 587.0 * g as f32 + 114.0 * b as f32)
-                / (255.0 * 1000.0)
+            let luma = (299.0 * r as f32 + 587.0 * g as f32 + 114.0 * b as f32) / (255.0 * 1000.0)
                 * p[3] as f32
                 / 255.0;
-            let idx = ((luma * (RAMP.len() - 1) as f32).round() as usize)
-                .min(RAMP.len() - 1);
+            let idx = ((luma * (RAMP.len() - 1) as f32).round() as usize).min(RAMP.len() - 1);
             out.push(RAMP[idx] as char);
         }
         out.push_str("\x1b[0m\n");

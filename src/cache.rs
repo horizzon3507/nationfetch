@@ -18,8 +18,7 @@ pub const COUNTRIES_FILE: &str = "countries.json";
 /// Migrates the old `countryfetch` cache directory on first run so a
 /// previous `--sync` isn't wasted.
 pub fn dir() -> Result<PathBuf> {
-    let base = dirs::cache_dir()
-        .context("could not determine the user cache directory")?;
+    let base = dirs::cache_dir().context("could not determine the user cache directory")?;
     let new = base.join("nationfetch");
     let old = base.join("countryfetch");
     if !new.exists() && old.is_dir() {
@@ -30,8 +29,7 @@ pub fn dir() -> Result<PathBuf> {
 
 /// Persist the raw upstream dataset verbatim.
 pub fn save_dataset(raw: &[u8], dir: &Path) -> Result<()> {
-    fs::create_dir_all(dir)
-        .with_context(|| format!("could not create {}", dir.display()))?;
+    fs::create_dir_all(dir).with_context(|| format!("could not create {}", dir.display()))?;
     fs::write(dir.join(COUNTRIES_FILE), raw)
         .with_context(|| format!("could not write {}", dir.join(COUNTRIES_FILE).display()))
 }
@@ -80,7 +78,9 @@ pub fn cache_flags(countries: &[Country], dir: &Path, size: &FlagSize) -> Result
                 let total = countries.len();
                 loop {
                     let i = next.fetch_add(1, Ordering::Relaxed);
-                    let Some(country) = countries.get(i) else { return };
+                    let Some(country) = countries.get(i) else {
+                        return;
+                    };
                     let label = format!("({}/{}) {}", i + 1, total, country.name.common);
                     if tty {
                         let mut out = std::io::stdout().lock();

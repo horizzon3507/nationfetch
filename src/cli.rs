@@ -69,6 +69,4 @@ pub struct Cli {
     /// Print the resolved country's raw JSON
     #[arg(long)]
     pub json: bool,
-
 }
-

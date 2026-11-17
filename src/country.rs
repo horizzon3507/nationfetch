@@ -116,10 +116,7 @@ impl Country {
     pub fn flag_urls(&self) -> Vec<String> {
         let mut urls = vec![self.flags.png.clone()];
         if !self.cca2.is_empty() {
-            let cdn = format!(
-                "https://flagcdn.com/w320/{}.png",
-                self.cca2.to_lowercase()
-            );
+            let cdn = format!("https://flagcdn.com/w320/{}.png", self.cca2.to_lowercase());
             if !urls.contains(&cdn) {
                 urls.push(cdn);
             }
@@ -128,10 +125,12 @@ impl Country {
     }
 
     fn currencies(&self) -> impl Iterator<Item = String> + '_ {
-        self.currencies.iter().map(|(abbr, info)| match &info.symbol {
-            Some(symbol) => format!("{} [{abbr}][{symbol}]", info.name),
-            None => format!("{} [{abbr}]", info.name),
-        })
+        self.currencies
+            .iter()
+            .map(|(abbr, info)| match &info.symbol {
+                Some(symbol) => format!("{} [{abbr}][{symbol}]", info.name),
+                None => format!("{} [{abbr}]", info.name),
+            })
     }
 
     /// Colored `label: value` lines for the info block, like
@@ -144,10 +143,7 @@ impl Country {
 
         push("Official", fmt::or_missing(&self.name.official));
         push("Capital", fmt::join_or_missing(&self.capital, " | "));
-        push(
-            "Capital Lat/Lng",
-            fmt::latlng(&self.capital_info.latlng),
-        );
+        push("Capital Lat/Lng", fmt::latlng(&self.capital_info.latlng));
         push("Region", self.region_line());
         push("Population", fmt::thousands(self.population));
         if self.area > 0.0 {
@@ -226,37 +222,48 @@ impl Country {
     /// `Ok(None)` when the field exists but this country has no data.
     pub fn field_value(&self, name: &str, all: &[Country]) -> Result<Option<String>> {
         const FIELDS: &[&str] = &[
-            "name", "official", "capital", "capital-latlng", "region",
-            "subregion", "population", "area", "languages", "currencies",
-            "timezones", "tld", "latlng", "borders", "independent",
-            "un-member", "fifa", "driving-side", "calling", "gini",
-            "maps", "cca2", "cca3", "emoji",
+            "name",
+            "official",
+            "capital",
+            "capital-latlng",
+            "region",
+            "subregion",
+            "population",
+            "area",
+            "languages",
+            "currencies",
+            "timezones",
+            "tld",
+            "latlng",
+            "borders",
+            "independent",
+            "un-member",
+            "fifa",
+            "driving-side",
+            "calling",
+            "gini",
+            "maps",
+            "cca2",
+            "cca3",
+            "emoji",
         ];
         let value = match name {
             "name" => Some(self.name.common.clone()),
             "official" => Some(self.name.official.clone()),
-            "capital" => (!self.capital.is_empty())
-                .then(|| self.capital.join(" | ")),
+            "capital" => (!self.capital.is_empty()).then(|| self.capital.join(" | ")),
             "capital-latlng" => (self.capital_info.latlng.len() >= 2)
                 .then(|| fmt::latlng(&self.capital_info.latlng)),
             "region" => (!self.region.is_empty()).then(|| self.region.clone()),
-            "subregion" => {
-                (!self.subregion.is_empty()).then(|| self.subregion.clone())
-            }
+            "subregion" => (!self.subregion.is_empty()).then(|| self.subregion.clone()),
             "population" => Some(fmt::thousands(self.population)),
-            "area" => (self.area > 0.0)
-                .then(|| fmt::thousands(self.area as u64)),
-            "languages" => (!self.languages.is_empty())
-                .then(|| self.languages_line()),
+            "area" => (self.area > 0.0).then(|| fmt::thousands(self.area as u64)),
+            "languages" => (!self.languages.is_empty()).then(|| self.languages_line()),
             "currencies" => (!self.currencies.is_empty())
                 .then(|| fmt::join_or_missing(self.currencies(), " | ")),
-            "timezones" => (!self.timezones.is_empty())
-                .then(|| self.timezones.join(" | ")),
+            "timezones" => (!self.timezones.is_empty()).then(|| self.timezones.join(" | ")),
             "tld" => (!self.tld.is_empty()).then(|| self.tld.join(" | ")),
-            "latlng" => (self.latlng.len() >= 2)
-                .then(|| fmt::latlng(&self.latlng)),
-            "borders" => (!self.borders.is_empty())
-                .then(|| self.borders_line(all)),
+            "latlng" => (self.latlng.len() >= 2).then(|| fmt::latlng(&self.latlng)),
+            "borders" => (!self.borders.is_empty()).then(|| self.borders_line(all)),
             "independent" => self.independent.map(yes_no),
             "un-member" => self.un_member.map(yes_no),
             "fifa" => self.fifa.clone(),
@@ -271,10 +278,7 @@ impl Country {
             "cca2" => Some(self.cca2.clone()),
             "cca3" => Some(self.cca3.clone()),
             "emoji" => Some(self.flag.clone()),
-            _ => anyhow::bail!(
-                "unknown field '{name}' — available: {}",
-                FIELDS.join(", ")
-            ),
+            _ => anyhow::bail!("unknown field '{name}' — available: {}", FIELDS.join(", ")),
         };
         Ok(value)
     }
