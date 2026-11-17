@@ -18,16 +18,10 @@ pub fn agent() -> ureq::Agent {
         .into()
 }
 
-/// Fetch the full country dataset.
-pub fn fetch_countries(agent: &ureq::Agent) -> Result<Vec<Country>> {
-    let mut response = agent
-        .get(ALL_URL)
-        .call()
-        .context("failed to fetch the country dataset")?;
-    response
-        .body_mut()
-        .read_json()
-        .context("invalid country dataset")
+/// Fetch the full dataset verbatim (kept raw in the cache so fields
+/// added later don't need a re-sync).
+pub fn fetch_dataset(agent: &ureq::Agent) -> Result<Vec<u8>> {
+    fetch_bytes(agent, ALL_URL).context("failed to fetch the country dataset")
 }
 
 /// Fetch raw bytes (flag PNGs).

@@ -53,8 +53,7 @@ pub struct Cli {
     /// Flag width in characters
     #[arg(long, default_value_t = 40, value_parser = clap::value_parser!(u16).range(1..))]
     pub width: u16,
-
     /// Flag height in characters
-    #[arg(long, default_value_t = 12, value_parser = clap::value_parser!(u16).range(1..))]
+    #[arg(long, default_value_t = 20, value_parser = clap::value_parser!(u16).range(1..))]
     pub height: u16,
 }

@@ -1,6 +1,7 @@
 mod api;
 mod ascii;
 mod cache;
+mod display;
 mod cli;
 mod country;
 mod fmt;
@@ -27,16 +28,16 @@ fn run() -> Result<()> {
 
     if args.sync {
         println!("Fetching countries data...");
-        let countries = api::fetch_countries(&agent)?;
+        let raw = api::fetch_dataset(&agent)?;
         println!("Saving cache...");
-        cache::save_countries(&countries, &dir)?;
+        cache::save_dataset(&raw, &dir)?;
         println!("{}", "Cache saved.".green());
 
         if args.flag {
             println!(
                 "Generating ASCII art for each country flag. This may take a minute..."
             );
-            cache::cache_flags(&countries, &dir, &size)?;
+            cache::cache_flags(&cache::read_countries(&dir)?, &dir, &size)?;
             println!("{}", "Done.".green());
         }
     }
@@ -56,7 +57,7 @@ fn run() -> Result<()> {
     let countries = cache::read_countries(&dir)?;
 
     if let Some(capital) = &args.capital {
-        country::find_by_capital(&countries, capital)?.print();
+        display::print(country::find_by_capital(&countries, capital)?, &countries);
     }
 
     let name = if args.random {
@@ -67,17 +68,22 @@ fn run() -> Result<()> {
 
     if let Some(name) = &name {
         let country = country::find_by_name(&countries, name)?;
-        if args.flag || args.flag_only || args.flag_remote {
+        let art = if args.flag || args.flag_only || args.flag_remote {
             if args.flag_remote {
                 let png = api::fetch_flag_png(&agent, country)?;
-                print!("{}", ascii::png_to_ascii(&png, &size)?);
+                ascii::png_to_ascii(&png, &size)?
             } else {
-                print!("{}", cache::read_flag(country, &dir)?);
+                cache::read_flag(country, &dir)?
             }
-        }
-        if !args.flag_only {
-            println!();
-            country.print();
+        } else {
+            String::new()
+        };
+        if args.flag_only {
+            print!("{art}");
+        } else if art.is_empty() {
+            display::print(country, &countries);
+        } else {
+            display::print_side_by_side(&art, country, &countries);
         }
     }
 

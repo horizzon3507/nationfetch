@@ -1,7 +1,7 @@
 //! Value formatting for the country info block.
 
 /// Placeholder shown when the API has no value for a field.
-const MISSING: &str = "unknown";
+pub const MISSING: &str = "unknown";
 
 /// Thousands-separate a non-negative integer: 1234567 -> "1,234,567".
 pub fn thousands(n: u64) -> String {

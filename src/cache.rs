@@ -28,16 +28,16 @@ pub fn dir() -> Result<PathBuf> {
     Ok(new)
 }
 
-/// Persist the full dataset as pretty-printed JSON.
-pub fn save_countries(countries: &[Country], dir: &Path) -> Result<()> {
+/// Persist the raw upstream dataset verbatim.
+pub fn save_dataset(raw: &[u8], dir: &Path) -> Result<()> {
     fs::create_dir_all(dir)
         .with_context(|| format!("could not create {}", dir.display()))?;
-    let json = serde_json::to_string_pretty(countries)?;
-    fs::write(dir.join(COUNTRIES_FILE), json)
+    fs::write(dir.join(COUNTRIES_FILE), raw)
         .with_context(|| format!("could not write {}", dir.join(COUNTRIES_FILE).display()))
 }
 
-/// Load the cached dataset; tells the user to `--sync` when missing.
+/// Load and parse the cached dataset; tells the user to `--sync` when
+/// missing.
 pub fn read_countries(dir: &Path) -> Result<Vec<Country>> {
     let path = dir.join(COUNTRIES_FILE);
     let raw = match fs::read_to_string(&path) {
