@@ -153,10 +153,7 @@ impl Country {
         if self.area > 0.0 {
             push("Area", format!("{} km²", fmt::thousands(self.area as u64)));
         }
-        push(
-            "Languages",
-            fmt::join_or_missing(self.languages.values(), " | "),
-        );
+        push("Languages", self.languages_line());
         push("Currencies", fmt::join_or_missing(self.currencies(), " | "));
         push("Timezones", fmt::join_or_missing(&self.timezones, " | "));
         push("TLD", fmt::join_or_missing(&self.tld, " | "));
@@ -186,7 +183,7 @@ impl Country {
         lines
     }
 
-    fn region_line(&self) -> String {
+    pub fn region_line(&self) -> String {
         match (self.region.is_empty(), self.subregion.is_empty()) {
             (true, true) => fmt::MISSING.into(),
             (true, false) => self.subregion.clone(),
@@ -195,7 +192,11 @@ impl Country {
         }
     }
 
-    fn borders_line(&self, all: &[Country]) -> String {
+    pub fn languages_line(&self) -> String {
+        fmt::join_or_missing(self.languages.values(), " | ")
+    }
+
+    pub fn borders_line(&self, all: &[Country]) -> String {
         if self.borders.is_empty() {
             return "none".into();
         }
@@ -213,12 +214,69 @@ impl Country {
 
     /// "+39" style dialing code; multi-suffix countries (US: +1207…)
     /// show the root only.
-    fn calling_code(&self) -> Option<String> {
+    pub fn calling_code(&self) -> Option<String> {
         let root = self.idd.root.as_deref().filter(|r| !r.is_empty())?;
         Some(match self.idd.suffixes.as_slice() {
             [suffix] => format!("{root}{suffix}"),
             _ => root.to_string(),
         })
+    }
+
+    /// A single field's plain (uncolored) value for `--field`.
+    /// `Ok(None)` when the field exists but this country has no data.
+    pub fn field_value(&self, name: &str, all: &[Country]) -> Result<Option<String>> {
+        const FIELDS: &[&str] = &[
+            "name", "official", "capital", "capital-latlng", "region",
+            "subregion", "population", "area", "languages", "currencies",
+            "timezones", "tld", "latlng", "borders", "independent",
+            "un-member", "fifa", "driving-side", "calling", "gini",
+            "maps", "cca2", "cca3", "emoji",
+        ];
+        let value = match name {
+            "name" => Some(self.name.common.clone()),
+            "official" => Some(self.name.official.clone()),
+            "capital" => (!self.capital.is_empty())
+                .then(|| self.capital.join(" | ")),
+            "capital-latlng" => (self.capital_info.latlng.len() >= 2)
+                .then(|| fmt::latlng(&self.capital_info.latlng)),
+            "region" => (!self.region.is_empty()).then(|| self.region.clone()),
+            "subregion" => {
+                (!self.subregion.is_empty()).then(|| self.subregion.clone())
+            }
+            "population" => Some(fmt::thousands(self.population)),
+            "area" => (self.area > 0.0)
+                .then(|| fmt::thousands(self.area as u64)),
+            "languages" => (!self.languages.is_empty())
+                .then(|| self.languages_line()),
+            "currencies" => (!self.currencies.is_empty())
+                .then(|| fmt::join_or_missing(self.currencies(), " | ")),
+            "timezones" => (!self.timezones.is_empty())
+                .then(|| self.timezones.join(" | ")),
+            "tld" => (!self.tld.is_empty()).then(|| self.tld.join(" | ")),
+            "latlng" => (self.latlng.len() >= 2)
+                .then(|| fmt::latlng(&self.latlng)),
+            "borders" => (!self.borders.is_empty())
+                .then(|| self.borders_line(all)),
+            "independent" => self.independent.map(yes_no),
+            "un-member" => self.un_member.map(yes_no),
+            "fifa" => self.fifa.clone(),
+            "driving-side" => self.car.side.clone(),
+            "calling" => self.calling_code(),
+            "gini" => self
+                .gini
+                .iter()
+                .next_back()
+                .map(|(year, v)| format!("{v} ({year})")),
+            "maps" => self.maps.google_maps.clone(),
+            "cca2" => Some(self.cca2.clone()),
+            "cca3" => Some(self.cca3.clone()),
+            "emoji" => Some(self.flag.clone()),
+            _ => anyhow::bail!(
+                "unknown field '{name}' — available: {}",
+                FIELDS.join(", ")
+            ),
+        };
+        Ok(value)
     }
 }
 

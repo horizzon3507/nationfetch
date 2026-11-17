@@ -56,4 +56,18 @@ pub struct Cli {
     /// Flag height in characters
     #[arg(long, default_value_t = 20, value_parser = clap::value_parser!(u16).range(1..))]
     pub height: u16,
+    /// List all cached country names
+    #[arg(long, short = 'l')]
+    pub list: bool,
+
+    /// Print only one field's raw value (e.g. --field capital);
+    /// see the error message for available names
+    #[arg(long, value_name = "FIELD")]
+    pub field: Option<String>,
+
+    /// Print the resolved country's raw JSON
+    #[arg(long)]
+    pub json: bool,
+
 }
+

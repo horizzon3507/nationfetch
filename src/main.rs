@@ -1,14 +1,16 @@
 mod api;
 mod ascii;
 mod cache;
-mod display;
 mod cli;
 mod country;
+mod display;
 mod fmt;
 
 use anyhow::Result;
 use clap::{CommandFactory, Parser};
 use colored::Colorize;
+
+use country::Country;
 
 fn main() {
     if let Err(err) = run() {
@@ -42,7 +44,11 @@ fn run() -> Result<()> {
         }
     }
 
-    let lookup = args.name.is_some() || args.capital.is_some() || args.random;
+    let lookup = args.name.is_some()
+        || args.capital.is_some()
+        || args.random
+        || args.list;
+    let name_arg = args.name;
     if !lookup {
         if args.flag_only {
             anyhow::bail!("--flagonly requires a country name");
@@ -56,18 +62,32 @@ fn run() -> Result<()> {
 
     let countries = cache::read_countries(&dir)?;
 
+    if args.list {
+        for country in &countries {
+            println!("{}", country.name.common);
+        }
+        return Ok(());
+    }
+
     if let Some(capital) = &args.capital {
-        display::print(country::find_by_capital(&countries, capital)?, &countries);
+        let country = country::find_by_capital(&countries, capital)?;
+        if !emit_raw(args.json, args.field.as_deref(), country, &countries)? {
+            display::print(country, &countries);
+        }
     }
 
     let name = if args.random {
         Some(country::random(&countries)?.name.common.clone())
     } else {
-        args.name
+        name_arg
     };
 
     if let Some(name) = &name {
         let country = country::find_by_name(&countries, name)?;
+        if emit_raw(args.json, args.field.as_deref(), country, &countries)? {
+            return Ok(());
+        }
+
         let art = if args.flag || args.flag_only || args.flag_remote {
             if args.flag_remote {
                 let png = api::fetch_flag_png(&agent, country)?;
@@ -88,4 +108,26 @@ fn run() -> Result<()> {
     }
 
     Ok(())
+}
+
+/// Handle `--json`/`--field`: prints the raw representation and reports
+/// whether the normal display should be skipped.
+fn emit_raw(
+    json: bool,
+    field: Option<&str>,
+    country: &Country,
+    all: &[Country],
+) -> Result<bool> {
+    if json {
+        println!("{}", serde_json::to_string_pretty(country)?);
+        return Ok(true);
+    }
+    if let Some(field) = field {
+        match country.field_value(field, all)? {
+            Some(value) => println!("{value}"),
+            None => println!("-"),
+        }
+        return Ok(true);
+    }
+    Ok(false)
 }
